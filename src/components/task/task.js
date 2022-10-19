@@ -20,8 +20,6 @@ export default class Task extends Component {
 
     if ( e.keyCode === 13 && e.target.value) {
 
-      console.log(this.props.key);
-
       this.props.onEditTaskForm(this.props.text, this.state.newTaskLabel);
 
       this.setState({newTaskLabel: ''});
@@ -41,7 +39,9 @@ export default class Task extends Component {
             <input 
               className="toggle" 
               type="checkbox" 
-              checked={completed ? true : false}/>
+              checked={completed}
+              onClick={onCompleteTask}
+              readOnly/>
             <label>
               <span className="description"
                     onClick={onCompleteTask}>
