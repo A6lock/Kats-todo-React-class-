@@ -4,20 +4,49 @@ import './task.css';
 
 export default class Task extends Component {
 
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      newTaskLabel: ''
+    }
+  }
+
+  onChangeLabel = (e) => {
+    this.setState({newTaskLabel: e.target.value})
+  }
+
+  onEditTaskForm = (e) => {
+
+    if ( e.keyCode === 13 && e.target.value) {
+
+      console.log(this.props.key);
+
+      this.props.onEditTaskForm(this.props.text, this.state.newTaskLabel);
+
+      this.setState({newTaskLabel: ''});
+    }
+
+  }
 
   render() {
-    const {text, completed,  status, onEditTask, onDeleteTask, onCompleteTask} = this.props;
 
-    let classListItem = completed ? 'completed' : '';
+    const {text, completed, editing, onEditTask, onDeleteTask, onCompleteTask} = this.props;
+
+    const classListItem = completed ? 'completed' : editing ? 'editing' : '';
 
     return (
         <li className={classListItem}>
           <div className="view">
-            <input className="toggle" type="checkbox" />
+            <input 
+              className="toggle" 
+              type="checkbox" 
+              checked={completed ? true : false}/>
             <label>
               <span className="description"
-                    onClick={onCompleteTask}>{text}</span>
+                    onClick={onCompleteTask}>
+                    {text}
+              </span>
               <span className="created">Не известно</span>
             </label>
             <button className="icon icon-edit" 
@@ -25,55 +54,15 @@ export default class Task extends Component {
             <button className="icon icon-destroy"
             onClick={onDeleteTask}/>
           </div>
-          {status === 'editing' 
-                      ? 
-                        <input type="text" className="edit" value="Editing task" />
-                      :
-                      ''
-                      }
+          {editing ? <input 
+                        type="text" 
+                        className="edit" 
+                        placeholder='Enter a new task'
+                        onChange={this.onChangeLabel}
+                        onKeyDown={this.onEditTaskForm}
+                        value={this.state.newTaskLabel} 
+                        autoFocus/> : ''}
       </li>
     )
   }
 }
-
-/*
-        <ul class="todo-list">
-
-          <li class="completed">
-            <div class="view">
-              <input class="toggle" type="checkbox">
-              <label>
-                <span class="description">Completed task</span>
-                <span class="created">created 17 seconds ago</span>
-              </label>
-              <button class="icon icon-edit"></button>
-              <button class="icon icon-destroy"></button>
-            </div>
-          </li>
-
-          <li class="editing">
-            <div class="view">
-              <input class="toggle" type="checkbox">
-              <label>
-                <span class="description">Editing task</span>
-                <span class="created">created 5 minutes ago</span>
-              </label>
-              <button class="icon icon-edit"></button>
-              <button class="icon icon-destroy"></button>
-            </div>
-            
-          </li>
-
-          <li>
-            <div class="view">
-              <input class="toggle" type="checkbox">
-              <label>
-                <span class="description">Active task</span>
-                <span class="created">created 5 minutes ago</span>
-              </label>
-              <button class="icon icon-edit"></button>
-              <button class="icon icon-destroy"></button>
-            </div>
-          </li>
-        </ul>
-*/
