@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { PropTypes } from "prop-types";
+
 
 import './newTaskForm.css';
 
@@ -11,6 +13,15 @@ export default class NewTaskForm extends Component {
       text: '',
     }
 
+  }
+
+  static defaultProps = {
+    onCreate: () => {},
+    
+  }
+
+  static propTypes = {
+    onCreate: PropTypes.func,
   }
 
   onChangeValue = (e) => this.setState({text: e.target.value})

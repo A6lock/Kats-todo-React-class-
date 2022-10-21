@@ -13,9 +13,9 @@ export default class App extends Component {
 
     this.state = {
       data: [
-        {text: 'Completed task',completed: false, editing: false, id: 1},
-        {text: 'Editing task',completed: false, editing: false, id: 2},
-        {text: 'Active task',completed: false, editing: false, id: 3},
+        {text: 'Completed task',completed: false, editing: false, id: 1, creationTime: new Date()},
+        {text: 'Editing task',completed: false, editing: false, id: 2, creationTime: new Date()},
+        {text: 'Active task',completed: false, editing: false, id: 3, creationTime: new Date()},
       ],
       completedTask: 0,
       filter: 'All',
@@ -38,10 +38,10 @@ export default class App extends Component {
     this.setState({data: newArr});
   }
 
-  onEditTaskForm = (oldText, newText) => {
+  onEditTaskForm = (id, newText) => {
     const newArr = this.state.data.map(element => {
       
-      if(element.text === oldText) {
+      if(element.id === id) {
         element.text = newText; 
         element.editing = !element.editing;
       }
@@ -84,7 +84,8 @@ export default class App extends Component {
       text: text,
       completed: false,
       editing: false,
-      id: this.maxId++
+      id: this.maxId++,
+      creationTime: new Date()
     };
 
     const newData = [...this.state.data, newElem];
