@@ -36,22 +36,20 @@ export default class Task extends Component {
     onCompleteTask: PropTypes.func,
   }
 
-  someFunc = () => {
-
-  }
-
   onChangeLabel = (e) => {
     this.setState({newTaskLabel: e.target.value})
   }
 
-  timeUpdate = () => 
-    this.timer =  setTimeout(() => {
-      console.log(formatDistanceToNow(this.props.creationTime, {includeSeconds: true}))
-      this.setState({afterCreationTime: formatDistanceToNow(this.props.creationTime, {includeSeconds: true})})
-  }, 1000);
+  componentDidMount = () => {
+    this.timerId = setInterval( () => this.timeUpdate(), 1000);
+  }
 
-  timeClose = () => {
-    clearInterval(this.timer);
+  componentWillUnmount = () => {
+    clearInterval(this.timerId);
+  }
+
+  timeUpdate = () => {
+    this.setState({afterCreationTime: formatDistanceToNow(this.props.creationTime, {includeSeconds: true})})
   }
 
   onEditTaskForm = (e) => {
@@ -70,8 +68,6 @@ export default class Task extends Component {
     const {text, completed, editing, onEditTask, onDeleteTask, onCompleteTask} = this.props;
 
     const classListItem = completed ? 'completed' : editing ? 'editing' : '';
-
-    this.timeUpdate();
 
     return (
         <li className={classListItem}>

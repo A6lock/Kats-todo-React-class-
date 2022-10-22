@@ -28,7 +28,6 @@ export default class TaskFilter extends Component {
   static propTypes = {
     onFilterChange: PropTypes.func,
     filter: PropTypes.string,
-    
   }
 
   render() {
