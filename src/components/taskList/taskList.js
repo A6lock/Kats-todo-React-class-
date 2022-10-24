@@ -5,6 +5,7 @@ import Task from '../task/task';
 
 import './taskList.css';
 
+// eslint-disable-next-line react/prefer-stateless-function
 export default class TaskList extends Component {
   static defaultProps = {
     onEdit: () => {},
@@ -14,6 +15,7 @@ export default class TaskList extends Component {
   };
 
   static propTypes = {
+    // eslint-disable-next-line react/forbid-prop-types
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
     onEdit: PropTypes.func,
     onEditTaskForm: PropTypes.func,
@@ -22,9 +24,9 @@ export default class TaskList extends Component {
   };
 
   render() {
-    const { onEdit, onDelete, onComplete, onEditTaskForm } = this.props;
+    const { onEdit, onDelete, onComplete, onEditTaskForm, data } = this.props;
 
-    const data = this.props.data.map((item) => {
+    const newData = data.map((item) => {
       const { id, ...itemProps } = item;
 
       return (
@@ -42,7 +44,7 @@ export default class TaskList extends Component {
 
     return (
       <section className="main">
-        <ul className="todo-list">{data}</ul>
+        <ul className="todo-list">{newData}</ul>
       </section>
     );
   }

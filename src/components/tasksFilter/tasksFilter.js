@@ -4,14 +4,6 @@ import { PropTypes } from 'prop-types';
 import './tasksFilter.css';
 
 export default class TaskFilter extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      filterData: [{ name: 'All' }, { name: 'Active' }, { name: 'Completed' }],
-    };
-  }
-
   static defaultProps = {
     onFilterChange: () => {},
     filter: 'All',
@@ -21,6 +13,14 @@ export default class TaskFilter extends Component {
     onFilterChange: PropTypes.func,
     filter: PropTypes.string,
   };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filterData: [{ name: 'All' }, { name: 'Active' }, { name: 'Completed' }],
+    };
+  }
 
   render() {
     const { filterData } = this.state;

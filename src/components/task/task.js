@@ -5,15 +5,6 @@ import { formatDistanceToNow } from 'date-fns';
 import './task.css';
 
 export default class Task extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      newTaskLabel: '',
-      afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }),
-    };
-  }
-
   static defaultProps = {
     onEditTaskForm: () => {},
     text: '',
@@ -34,25 +25,39 @@ export default class Task extends Component {
     onCompleteTask: PropTypes.func,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      newTaskLabel: '',
+      // eslint-disable-next-line react/destructuring-assignment
+      afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }),
+    };
+  }
+
+  componentDidMount() {
+    this.timerId = setInterval(() => this.timeUpdate(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
   onChangeLabel = (e) => {
     this.setState({ newTaskLabel: e.target.value });
   };
 
-  componentDidMount = () => {
-    this.timerId = setInterval(() => this.timeUpdate(), 1000);
-  };
-
-  componentWillUnmount = () => {
-    clearInterval(this.timerId);
-  };
-
   timeUpdate = () => {
-    this.setState({ afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }) });
+    const { creationTime } = this.props;
+    this.setState({ afterCreationTime: formatDistanceToNow(creationTime, { includeSeconds: true }) });
   };
 
   onEditTaskForm = (e) => {
+    const { onEditTaskForm, id } = this.props;
+    const { newTaskLabel } = this.state;
+
     if (e.keyCode === 13 && e.target.value) {
-      this.props.onEditTaskForm(this.props.id, this.state.newTaskLabel);
+      onEditTaskForm(id, newTaskLabel);
 
       this.setState({ newTaskLabel: '' });
     }
@@ -60,21 +65,25 @@ export default class Task extends Component {
 
   render() {
     const { text, completed, editing, onEditTask, onDeleteTask, onCompleteTask } = this.props;
+    const { afterCreationTime, newTaskLabel } = this.state;
 
-    const classListItem = completed ? 'completed' : editing ? 'editing' : '';
+    // eslint-disable-next-line no-nested-ternary
+    const classListItem = completed ? 'completed' : editing ? 'editing' : null;
 
     return (
       <li className={classListItem}>
         <div className="view">
           <input className="toggle" type="checkbox" checked={completed} onClick={onCompleteTask} readOnly />
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label>
-            <span className="description" onClick={onCompleteTask}>
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+            <span className="description" onClick={onCompleteTask} onKeyDown={onCompleteTask}>
               {text}
             </span>
-            <span className="created">created {this.state.afterCreationTime} ago</span>
+            <span className="created">created {afterCreationTime} ago</span>
           </label>
-          <button className="icon icon-edit" onClick={onEditTask} />
-          <button className="icon icon-destroy" onClick={onDeleteTask} />
+          <button type="button" className="icon icon-edit" onClick={onEditTask} aria-label="Edit button" />
+          <button type="button" className="icon icon-destroy" onClick={onDeleteTask} aria-label="Delete button" />
         </div>
         {editing ? (
           <input
@@ -83,7 +92,8 @@ export default class Task extends Component {
             placeholder="Enter a new task"
             onChange={this.onChangeLabel}
             onKeyDown={this.onEditTaskForm}
-            value={this.state.newTaskLabel}
+            value={newTaskLabel}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
           />
         ) : (

@@ -12,10 +12,9 @@
   "plugins": ["react", "prettier"],
   "rules": {
     "indent": ["error", 2],
-    "prettier/prettier": "error",
     "linebreak-style": [0, "unix"],
     "quotes": ["error", "single"],
-    "semi": ["error", "never"],
+    "semi": ["error", "always"],
     "react/react-in-jsx-scope": "off",
     "react/prop-types": 0,
     "import/no-unresolved": [2, { "caseSensitive": false }],
@@ -28,7 +27,8 @@
       }
     ],
     "react/jsx-uses-react": ["off"],
-    "react/jsx-props-no-spreading": ["warn"],
-    "no-shadow": "off"
+    "react/jsx-props-no-spreading": ["off"],
+    "no-shadow": "off",
+    "react/static-property-placement": ["off"]
   }
 }

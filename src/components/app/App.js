@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable prettier/prettier */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 import { Component } from 'react';
@@ -105,6 +107,7 @@ export default class App extends Component {
     this.setState({ filter: filterName });
   };
 
+  // eslint-disable-next-line class-methods-use-this
   filteredData = (data, filterName) => {
     switch (filterName) {
       case 'Active':
