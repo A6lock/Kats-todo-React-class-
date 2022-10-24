@@ -1,19 +1,17 @@
 import { Component } from 'react';
-import { PropTypes } from "prop-types";
+import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
-
 
 import './task.css';
 
 export default class Task extends Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
       newTaskLabel: '',
-      afterCreationTime: formatDistanceToNow(this.props.creationTime, {includeSeconds: true})
-    }
+      afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }),
+    };
   }
 
   static defaultProps = {
@@ -23,8 +21,8 @@ export default class Task extends Component {
     editing: false,
     onEditTask: () => {},
     onDeleteTask: () => {},
-    onCompleteTask: () => {}
-  } 
+    onCompleteTask: () => {},
+  };
 
   static propTypes = {
     onEditTaskForm: PropTypes.func,
@@ -34,71 +32,64 @@ export default class Task extends Component {
     onEditTask: PropTypes.func,
     onDeleteTask: PropTypes.func,
     onCompleteTask: PropTypes.func,
-  }
+  };
 
   onChangeLabel = (e) => {
-    this.setState({newTaskLabel: e.target.value})
-  }
+    this.setState({ newTaskLabel: e.target.value });
+  };
 
   componentDidMount = () => {
-    this.timerId = setInterval( () => this.timeUpdate(), 1000);
-  }
+    this.timerId = setInterval(() => this.timeUpdate(), 1000);
+  };
 
   componentWillUnmount = () => {
     clearInterval(this.timerId);
-  }
+  };
 
   timeUpdate = () => {
-    this.setState({afterCreationTime: formatDistanceToNow(this.props.creationTime, {includeSeconds: true})})
-  }
+    this.setState({ afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }) });
+  };
 
   onEditTaskForm = (e) => {
-
-    if ( e.keyCode === 13 && e.target.value) {
-
+    if (e.keyCode === 13 && e.target.value) {
       this.props.onEditTaskForm(this.props.id, this.state.newTaskLabel);
 
-      this.setState({newTaskLabel: ''});
+      this.setState({ newTaskLabel: '' });
     }
-
-  }
+  };
 
   render() {
-
-    const {text, completed, editing, onEditTask, onDeleteTask, onCompleteTask} = this.props;
+    const { text, completed, editing, onEditTask, onDeleteTask, onCompleteTask } = this.props;
 
     const classListItem = completed ? 'completed' : editing ? 'editing' : '';
 
     return (
-        <li className={classListItem}>
-          <div className="view">
-            <input 
-              className="toggle" 
-              type="checkbox" 
-              checked={completed}
-              onClick={onCompleteTask}
-              readOnly/>
-            <label>
-              <span className="description"
-                    onClick={onCompleteTask}>
-                    {text}
-              </span>
-              <span className="created">created {this.state.afterCreationTime} ago</span>
-            </label>
-            <button className="icon icon-edit" 
-            onClick={onEditTask}/>
-            <button className="icon icon-destroy"
-            onClick={onDeleteTask}/>
-          </div>
-          {editing ? <input 
-                        type="text" 
-                        className="edit" 
-                        placeholder='Enter a new task'
-                        onChange={this.onChangeLabel}
-                        onKeyDown={this.onEditTaskForm}
-                        value={this.state.newTaskLabel} 
-                        autoFocus/> : ''}
+      <li className={classListItem}>
+        <div className="view">
+          <input className="toggle" type="checkbox" checked={completed} onClick={onCompleteTask} readOnly />
+          <label>
+            <span className="description" onClick={onCompleteTask}>
+              {text}
+            </span>
+            <span className="created">created {this.state.afterCreationTime} ago</span>
+          </label>
+          <button className="icon icon-edit" onClick={onEditTask} />
+          <button className="icon icon-destroy" onClick={onDeleteTask} />
+        </div>
+        {editing ? (
+          <input
+            type="text"
+            className="edit"
+            placeholder="Enter a new task"
+            onChange={this.onChangeLabel}
+            onKeyDown={this.onEditTaskForm}
+            value={this.state.newTaskLabel}
+            autoFocus
+          />
+        ) : (
+          ''
+        )}
       </li>
-    )
+    );
   }
 }
