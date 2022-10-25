@@ -33,7 +33,7 @@ export default class App extends Component {
         {
           text: 'Active task',
           completed: false,
-          editing: false,
+          editing: true,
           id: 3,
           creationTime: new Date(),
         },
@@ -52,7 +52,7 @@ export default class App extends Component {
         }
         return item;
       });
-      return newData;
+      return { data: newData };
     });
   };
 
@@ -76,15 +76,9 @@ export default class App extends Component {
   };
 
   completed = (id) => {
-    this.setState(({ data }) => {
-      const newArr = data.map((item) => {
-        if (item.id === id) {
-          item.completed = !item.completed;
-        }
-        return item;
-      });
-      return newArr;
-    });
+    this.setState(({ data }) => ({
+      data: data.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item)),
+    }));
   };
 
   create = (text) => {
@@ -98,9 +92,11 @@ export default class App extends Component {
       creationTime: new Date(),
     };
 
-    const newArr = [data, newElem];
+    const newArr = [...data, newElem];
 
-    this.setState({ data: newArr });
+    this.setState(() => ({
+      data: newArr,
+    }));
   };
 
   onFilterChange = (filterName) => {
@@ -128,7 +124,6 @@ export default class App extends Component {
 
   render() {
     const { data, filter } = this.state;
-
     const visibleData = this.filteredData(data, filter);
     const completedItemCount = data.filter((item) => item.completed).length;
     return (
