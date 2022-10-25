@@ -24,7 +24,7 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "**/*.{js,jsx}": [
+    "**/*.{js}": [
       "npm run lint",
       "prettier --write"
     ]
