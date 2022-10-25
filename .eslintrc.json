@@ -3,7 +3,14 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "react-app", "airbnb", "plugin:prettier/recommended"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "react-app",
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
   "overrides": [],
   "parserOptions": {
     "ecmaVersion": "latest",
