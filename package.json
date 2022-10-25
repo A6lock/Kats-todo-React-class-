@@ -24,9 +24,9 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "**/*.{js,jsx}": [
+    "*.{js,jsx}": [
       "npm run lint",
-      "npm run format"
+      "git add ."
     ]
   },
   "browserslist": {
