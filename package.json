@@ -24,9 +24,10 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "**/*.{js}": [
+    "**/*.{js,jsx}": [
       "npm run lint",
-      "prettier --write"
+      "prettier --write",
+      "git add"
     ]
   },
   "browserslist": {
