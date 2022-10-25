@@ -23,15 +23,10 @@
     "format": "prettier --write src/**/*.js",
     "prepare": "husky install"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.(js|jsx)": [
+    "**/*.{js,jsx}": [
       "npm run lint",
-      "npm run format"
+      "prettier --write"
     ]
   },
   "browserslist": {
