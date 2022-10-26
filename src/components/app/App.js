@@ -43,7 +43,7 @@ export default class App extends Component {
     this.maxId = 4;
   }
 
-  edit = (id) => {
+  onEdit = (id) => {
     this.setState(({ data }) => ({
       data: data.map((item) => (item.id === id ? { ...item, editing: !item.editing } : item)),
     }));
@@ -64,13 +64,13 @@ export default class App extends Component {
     }));
   };
 
-  delete = (id) => {
+  onDelete = (id) => {
     this.setState(({ data }) => ({
       data: data.filter((item) => item.id !== id),
     }));
   };
 
-  completed = (id) => {
+  onCompleted = (id) => {
     this.setState(({ data }) => ({
       data: data.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item)),
     }));
@@ -86,7 +86,7 @@ export default class App extends Component {
     };
   };
 
-  create = (text) => {
+  onCreate = (text) => {
     const { data } = this.state;
 
     const newTask = this.createNewItem(text);
@@ -115,7 +115,7 @@ export default class App extends Component {
     }
   };
 
-  clearCompleted = () => {
+  onClearCompleted = () => {
     this.setState(({ data }) => {
       return { data: data.filter((item) => item.completed === false) };
     });
@@ -127,19 +127,19 @@ export default class App extends Component {
     const completedItemCount = data.filter((item) => item.completed).length;
     return (
       <section className="todoapp">
-        <NewTaskForm onCreate={this.create} />
+        <NewTaskForm onCreate={this.onCreate} />
         <TaskList
           data={visibleData}
-          onEdit={this.edit}
+          onEdit={this.onEdit}
           onEditTaskForm={this.onEditTaskForm}
-          onDelete={this.delete}
-          onComplete={this.completed}
+          onDelete={this.onDelete}
+          onComplete={this.onCompleted}
         />
         <Footer
           completedItemCount={completedItemCount}
           onFilterChange={this.onFilterChange}
           filter={filter}
-          onClearCompleted={this.clearCompleted}
+          onClearCompleted={this.onClearCompleted}
         />
       </section>
     );
