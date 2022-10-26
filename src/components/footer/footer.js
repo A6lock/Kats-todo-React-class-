@@ -8,25 +8,25 @@ import './footer.css';
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Footer extends Component {
   static defaultProps = {
-    isCompleted: 0,
+    completedItemCount: 0,
     onFilterChange: () => {},
     filter: 'All',
     onClearCompleted: () => {},
   };
 
   static propTypes = {
-    isCompleted: PropTypes.number,
+    completedItemCount: PropTypes.number,
     onFilterChange: PropTypes.func,
     filter: PropTypes.string,
     onClearCompleted: PropTypes.func,
   };
 
   render() {
-    const { isCompleted, filter, onFilterChange, onClearCompleted } = this.props;
+    const { completedItemCount, filter, onFilterChange, onClearCompleted } = this.props;
 
     return (
       <footer className="footer">
-        <span className="todo-count">{isCompleted} items left</span>
+        <span className="todo-count">{completedItemCount} items left</span>
         <TaskFilter onFilterChange={onFilterChange} filter={filter} />
         <button type="button" className="clear-completed" onClick={onClearCompleted}>
           Clear completed

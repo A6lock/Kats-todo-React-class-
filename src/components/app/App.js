@@ -33,7 +33,7 @@ export default class App extends Component {
         {
           text: 'Active task',
           completed: false,
-          editing: true,
+          editing: false,
           id: 3,
           creationTime: new Date(),
         },
@@ -45,28 +45,24 @@ export default class App extends Component {
   }
 
   edit = (id) => {
-    this.setState(({ data }) => {
-      const newData = data.map((item) => {
-        if (item.id === id && !item.completed) {
-          item.editing = !item.editing;
-        }
-        return item;
-      });
-      return { data: newData };
-    });
+    this.setState(({ data }) => ({
+      data: data.map((item) => (item.id === id ? { ...item, editing: !item.editing } : item)),
+    }));
   };
 
   onEditTaskForm = (id, newText) => {
-    this.setState(({ data }) => {
-      const newArr = data.map((item) => {
+    this.setState(({ data }) => ({
+      data: data.map((item) => {
         if (item.id === id) {
-          item.text = newText;
-          item.editing = !item.editing;
+          return {
+            ...item,
+            editing: !item.editing,
+            text: newText,
+          };
         }
         return item;
-      });
-      return newArr;
-    });
+      }),
+    }));
   };
 
   delete = (id) => {
@@ -81,18 +77,22 @@ export default class App extends Component {
     }));
   };
 
-  create = (text) => {
-    const { data } = this.state;
-
-    const newElem = {
+  createNewItem = (text) => {
+    return {
       text,
       completed: false,
       editing: false,
       id: this.maxId++,
       creationTime: new Date(),
     };
+  };
 
-    const newArr = [...data, newElem];
+  create = (text) => {
+    const { data } = this.state;
+
+    const newTask = this.createNewItem(text);
+
+    const newArr = [...data, newTask];
 
     this.setState(() => ({
       data: newArr,
@@ -118,7 +118,7 @@ export default class App extends Component {
 
   clearCompleted = () => {
     this.setState(({ data }) => {
-      return data.filter((item) => !item.completed);
+      return { data: data.filter((item) => item.completed === false) };
     });
   };
 
