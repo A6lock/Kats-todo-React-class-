@@ -8,6 +8,7 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "react-app",
+    "prettier",
     "airbnb",
     "plugin:prettier/recommended"
   ],

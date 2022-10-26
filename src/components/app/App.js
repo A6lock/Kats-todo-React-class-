@@ -1,5 +1,4 @@
 /* eslint-disable indent */
-/* eslint-disable prettier/prettier */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 import { Component } from 'react';
