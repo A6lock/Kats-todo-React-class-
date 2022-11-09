@@ -1,3 +1,6 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { Component } from 'react';
 import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
@@ -30,8 +33,10 @@ export default class Task extends Component {
 
     this.state = {
       newTaskLabel: '',
-      // eslint-disable-next-line react/destructuring-assignment
       afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }),
+      min: this.props.minValue,
+      sec: this.props.secValue,
+      timerRunning: false,
     };
   }
 
@@ -52,6 +57,10 @@ export default class Task extends Component {
     this.setState({ afterCreationTime: formatDistanceToNow(creationTime, { includeSeconds: true }) });
   };
 
+  startTimer = () => this.setState({ timerRunning: true });
+
+  pauseTimer = () => this.setState({ timerRunning: false });
+
   onEditTaskForm = (e) => {
     const { onEditTaskForm, id } = this.props;
     const { newTaskLabel } = this.state;
@@ -65,10 +74,15 @@ export default class Task extends Component {
 
   render() {
     const { text, completed, editing, onEditTask, onDeleteTask, onCompleteTask } = this.props;
-    const { afterCreationTime, newTaskLabel } = this.state;
+    const { afterCreationTime, newTaskLabel, min, sec, timerRunning } = this.state;
 
     // eslint-disable-next-line no-nested-ternary
     const classListItem = completed ? 'completed' : editing ? 'editing' : null;
+    const buttonType = !timerRunning ? (
+      <button type="button" className="icon icon-play" onClick={this.startTimer} />
+    ) : (
+      <button type="button" className="icon icon-pause" onClick={this.pauseTimer} />
+    );
 
     return (
       <li className={classListItem}>
@@ -79,6 +93,10 @@ export default class Task extends Component {
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <span className="description" onClick={onCompleteTask} onKeyDown={onCompleteTask}>
               {text}
+            </span>
+            <span className="created">
+              {buttonType}
+              {min}:{sec}
             </span>
             <span className="created">created {afterCreationTime} ago</span>
           </label>

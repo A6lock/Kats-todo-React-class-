@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Component } from 'react';
 import { PropTypes } from 'prop-types';
 
@@ -17,36 +18,60 @@ export default class NewTaskForm extends Component {
 
     this.state = {
       text: '',
+      min: '',
+      sec: '',
     };
   }
 
-  onChangeValue = (e) => this.setState({ text: e.target.value });
+  onChangeValue = (e) => this.setState({ [e.target.name]: e.target.value });
 
   onCreateTask = (e) => {
-    const { text } = this.state;
+    e.preventDefault();
+    const { text, min, sec } = this.state;
     const { onCreate } = this.props;
-    if (e.keyCode === 13 && e.target.value) {
-      onCreate(text);
+    if (text) {
+      onCreate(text, min, sec);
 
-      this.setState({ text: '' });
+      this.setState({
+        text: '',
+        min: '',
+        sec: '',
+      });
     }
   };
 
   render() {
-    const { text } = this.state;
+    const { text, min, sec } = this.state;
     return (
       <header className="header">
         <h1>todos</h1>
-        <input
-          className="new-todo"
-          type="text"
-          placeholder="What needs to be done?"
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-          value={text}
-          onChange={this.onChangeValue}
-          onKeyDown={this.onCreateTask}
-        />
+        <form className="new-todo-form" onSubmit={this.onCreateTask}>
+          <input
+            className="new-todo"
+            type="text"
+            name="text"
+            placeholder="What needs to be done?"
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
+            value={text}
+            onChange={this.onChangeValue}
+          />
+          <input
+            className="new-todo-form__timer"
+            value={min}
+            name="min"
+            placeholder="Min"
+            onChange={this.onChangeValue}
+          />
+          <input
+            className="new-todo-form__timer"
+            value={sec}
+            name="sec"
+            placeholder="Sec"
+            onChange={this.onChangeValue}
+          />
+          <input className="hidden" type="submit" />
+        </form>
       </header>
     );
   }

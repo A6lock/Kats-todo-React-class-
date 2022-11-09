@@ -28,7 +28,6 @@ export default class TaskList extends Component {
 
     const newData = data.map((item) => {
       const { id, ...itemProps } = item;
-
       return (
         <Task
           key={id}

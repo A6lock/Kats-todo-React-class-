@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable indent */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
@@ -21,6 +22,8 @@ export default class App extends Component {
           editing: false,
           id: 1,
           creationTime: new Date(),
+          minValue: 12,
+          secValue: 15,
         },
         {
           text: 'Editing task',
@@ -28,6 +31,8 @@ export default class App extends Component {
           editing: false,
           id: 2,
           creationTime: new Date(),
+          minValue: 12,
+          secValue: 15,
         },
         {
           text: 'Active task',
@@ -35,6 +40,8 @@ export default class App extends Component {
           editing: false,
           id: 3,
           creationTime: new Date(),
+          minValue: 12,
+          secValue: 15,
         },
       ],
       filter: 'All',
@@ -76,20 +83,25 @@ export default class App extends Component {
     }));
   };
 
-  createNewItem = (text) => {
+  createNewItem = (text, min, sec) => {
+    const minNumber = !min || isNaN(min) ? 12 : min;
+    const secNumber = !sec || isNaN(sec) ? 25 : sec;
+
     return {
       text,
       completed: false,
       editing: false,
       id: this.maxId++,
       creationTime: new Date(),
+      minValue: minNumber,
+      secValue: secNumber,
     };
   };
 
-  onCreate = (text) => {
+  onCreate = (text, min, sec) => {
     const { data } = this.state;
 
-    const newTask = this.createNewItem(text);
+    const newTask = this.createNewItem(text, min, sec);
 
     const newArr = [...data, newTask];
 
