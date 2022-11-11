@@ -24,6 +24,7 @@ export default class App extends Component {
           creationTime: new Date(),
           minValue: 12,
           secValue: 15,
+          timerRunning: false,
         },
         {
           text: 'Editing task',
@@ -33,6 +34,7 @@ export default class App extends Component {
           creationTime: new Date(),
           minValue: 12,
           secValue: 15,
+          timerRunning: false,
         },
         {
           text: 'Active task',
@@ -42,6 +44,7 @@ export default class App extends Component {
           creationTime: new Date(),
           minValue: 12,
           secValue: 15,
+          timerRunning: false,
         },
       ],
       filter: 'All',
@@ -95,7 +98,20 @@ export default class App extends Component {
       creationTime: new Date(),
       minValue: minNumber,
       secValue: secNumber,
+      timerRunning: false,
     };
+  };
+
+  onChangeTimerRunning = (id) => {
+    this.setState(({ data }) => {
+      const newData = data.map((item) => {
+        if (item.id === id) {
+          return { ...item, timerRunning: !item.timerRunning };
+        }
+        return item;
+      });
+      return { data: newData };
+    });
   };
 
   onCreate = (text, min, sec) => {
@@ -146,6 +162,7 @@ export default class App extends Component {
           onEditTaskForm={this.onEditTaskForm}
           onDelete={this.onDelete}
           onComplete={this.onCompleted}
+          onChangeTimerRunning={this.onChangeTimerRunning}
         />
         <Footer
           completedItemCount={completedItemCount}

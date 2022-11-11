@@ -48,7 +48,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 85px 15px 60px;
+  padding: 15px 72px 15px 50px;
+  column-gap: 1px;
+  cursor: pointer;
 }
 
 .todo-list li .label .created {
@@ -72,6 +74,7 @@
   transition: color 0.4s;
   font-weight: 400;
   color: #4d4d4d;
+  width: 167px;
 }
 
 .todo-list li .label .title:hover {
@@ -80,8 +83,6 @@
   max-width: 20ch;
   white-space: unset;
   overflow: unset;
-
-
 }
 
 .todo-list li.completed .label .title {

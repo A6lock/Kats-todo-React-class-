@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { PropTypes } from 'prop-types';
+import { formatDistanceToNow } from 'date-fns';
 
 import Task from '../task/task';
 
@@ -24,18 +25,21 @@ export default class TaskList extends Component {
   };
 
   render() {
-    const { onEdit, onDelete, onComplete, onEditTaskForm, data } = this.props;
+    const { onEdit, onDelete, onComplete, onEditTaskForm, data, onChangeTimerRunning } = this.props;
 
     const newData = data.map((item) => {
       const { id, ...itemProps } = item;
+      const afterCreationTime = formatDistanceToNow(itemProps.creationTime, { includeSeconds: true });
       return (
         <Task
           key={id}
           onEditTask={() => onEdit(id)}
           onDeleteTask={() => onDelete(id)}
           onCompleteTask={() => onComplete(id)}
+          onChangeTimerRunning={() => onChangeTimerRunning(id)}
           onEditTaskForm={onEditTaskForm}
           id={id}
+          afterCreationTime={afterCreationTime}
           {...itemProps}
         />
       );

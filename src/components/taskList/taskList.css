@@ -115,6 +115,11 @@
 	margin-bottom: -1px;
 }
 
+.todo-list li.completed .label .title {
+  color: #cdcdcd;
+  text-decoration: line-through;
+}
+
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 	.toggle-all,
 	.todo-list li .toggle {
