@@ -58,6 +58,11 @@
   color: gray;
 }
 
+.text-time {
+  text-align: center;
+  width: 195px;
+}
+
 .todo-list li .label .description {
   font-size: 13px;
   color: gray;

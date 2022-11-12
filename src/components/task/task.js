@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { Component } from 'react';
 import { PropTypes } from 'prop-types';
+import { formatDistanceToNow } from 'date-fns';
 
 import './task.css';
 
@@ -36,13 +37,19 @@ export default class Task extends Component {
       newTaskLabel: '',
       min: this.props.minValue,
       sec: this.props.secValue,
+      afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }),
     };
   }
 
-  componentDidUpdate() {}
+  componentDidMount() {
+    this.timeCreationID = setInterval(() => {
+      this.timeUpdate();
+    }, 5000);
+  }
 
   componentWillUnmount() {
     clearInterval(this.timerID);
+    clearInterval(this.timeCreationID);
   }
 
   onChangeLabel = (e) => {
@@ -51,12 +58,16 @@ export default class Task extends Component {
 
   startTimer = () => {
     this.props.onChangeTimerRunning();
-    this.timerID = setInterval(this.timerDecrement, 10);
+    this.timerID = setInterval(this.timerDecrement, 1000);
   };
 
   pauseTimer = () => {
     clearInterval(this.timerID);
     this.props.onChangeTimerRunning();
+  };
+
+  timeUpdate = () => {
+    this.setState({ afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }) });
   };
 
   minDecr = () => {
@@ -100,9 +111,8 @@ export default class Task extends Component {
   };
 
   render() {
-    const { text, completed, editing, onEditTask, onDeleteTask, onCompleteTask, afterCreationTime, timerRunning } =
-      this.props;
-    const { newTaskLabel, min, sec } = this.state;
+    const { text, completed, editing, onEditTask, onDeleteTask, onCompleteTask, timerRunning } = this.props;
+    const { newTaskLabel, min, sec, afterCreationTime } = this.state;
 
     // eslint-disable-next-line no-nested-ternary
     const classListItem = completed ? 'completed' : editing ? 'editing' : null;
@@ -126,7 +136,7 @@ export default class Task extends Component {
               {buttonType}
               {min > 9 ? min : `0${min}`}:{sec > 9 ? sec : `0${sec}`}
             </span>
-            <span className="created">created {afterCreationTime} ago</span>
+            <span className="created text-time">created {afterCreationTime} ago</span>
           </div>
           <button type="button" className="icon icon-edit" onClick={onEditTask} aria-label="Edit button" />
           <button type="button" className="icon icon-destroy" onClick={onDeleteTask} aria-label="Delete button" />
