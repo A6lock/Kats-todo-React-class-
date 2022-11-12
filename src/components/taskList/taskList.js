@@ -24,10 +24,12 @@ export default class TaskList extends Component {
   };
 
   render() {
-    const { onEdit, onDelete, onComplete, onEditTaskForm, data, onChangeTimerRunning } = this.props;
+    const { onEdit, onDelete, onComplete, onEditTaskForm, data, onChangeTimerRunning, onTimeChange } = this.props;
 
     const newData = data.map((item) => {
       const { id, ...itemProps } = item;
+
+      const afterCreationTime = new Date(itemProps.creationTime);
       return (
         <Task
           key={id}
@@ -36,6 +38,8 @@ export default class TaskList extends Component {
           onCompleteTask={() => onComplete(id)}
           onChangeTimerRunning={() => onChangeTimerRunning(id)}
           onEditTaskForm={onEditTaskForm}
+          onTimeChange={onTimeChange}
+          afterCreationTime={afterCreationTime}
           id={id}
           {...itemProps}
         />

@@ -1,8 +1,10 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable indent */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 import { Component } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 import NewTaskForm from '../newTaskForm/newTaskForm';
 import TaskList from '../taskList/taskList';
@@ -15,42 +17,9 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      data: [
-        {
-          text: 'Completed task',
-          completed: false,
-          editing: false,
-          id: 1,
-          creationTime: new Date(),
-          minValue: 12,
-          secValue: 15,
-          timerRunning: false,
-        },
-        {
-          text: 'Editing task',
-          completed: false,
-          editing: false,
-          id: 2,
-          creationTime: new Date(),
-          minValue: 12,
-          secValue: 15,
-          timerRunning: false,
-        },
-        {
-          text: 'Active task',
-          completed: false,
-          editing: false,
-          id: 3,
-          creationTime: new Date(),
-          minValue: 12,
-          secValue: 15,
-          timerRunning: false,
-        },
-      ],
+      data: JSON.parse(localStorage.getItem('todoData')) || [],
       filter: 'All',
     };
-
-    this.maxId = 4;
   }
 
   onEdit = (id) => {
@@ -94,7 +63,7 @@ export default class App extends Component {
       text,
       completed: false,
       editing: false,
-      id: this.maxId++,
+      id: uuidv4(),
       creationTime: new Date(),
       minValue: minNumber,
       secValue: secNumber,
@@ -149,10 +118,19 @@ export default class App extends Component {
     });
   };
 
+  onTimeChange = (id, min, sec) => {
+    this.setState(({ data }) => ({
+      data: data.map((item) => (id === item.id ? { ...item, minValue: min, secValue: sec } : { ...item })),
+    }));
+  };
+
   render() {
     const { data, filter } = this.state;
     const visibleData = this.filteredData(data, filter);
     const completedItemCount = data.filter((item) => item.completed).length;
+
+    localStorage.setItem('todoData', JSON.stringify(data));
+
     return (
       <section className="todoapp">
         <NewTaskForm onCreate={this.onCreate} />
@@ -163,6 +141,7 @@ export default class App extends Component {
           onDelete={this.onDelete}
           onComplete={this.onCompleted}
           onChangeTimerRunning={this.onChangeTimerRunning}
+          onTimeChange={this.onTimeChange}
         />
         <Footer
           completedItemCount={completedItemCount}

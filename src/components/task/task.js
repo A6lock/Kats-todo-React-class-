@@ -37,7 +37,7 @@ export default class Task extends Component {
       newTaskLabel: '',
       min: this.props.minValue,
       sec: this.props.secValue,
-      afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }),
+      afterCreationTime: formatDistanceToNow(this.props.afterCreationTime, { includeSeconds: true }),
     };
   }
 
@@ -67,7 +67,9 @@ export default class Task extends Component {
   };
 
   timeUpdate = () => {
-    this.setState({ afterCreationTime: formatDistanceToNow(this.props.creationTime, { includeSeconds: true }) });
+    this.setState({
+      afterCreationTime: formatDistanceToNow(this.props.afterCreationTime, { includeSeconds: true }),
+    });
   };
 
   minDecr = () => {
@@ -82,20 +84,25 @@ export default class Task extends Component {
 
   timerDecrement = () => {
     const { min, sec } = this.state;
+    const { onTimeChange, id, timerRunning } = this.props;
 
-    if (this.props.editing) {
-      this.pauseTimer();
-    }
+    if (timerRunning) {
+      if (this.props.editing) {
+        this.pauseTimer();
+      }
 
-    if (min === 0 && sec === 0) {
-      clearInterval(this.timerID);
-      this.props.onChangeTimerRunning();
-      this.props.onCompleteTask();
-    }
-    if (sec > 0) {
-      this.setState({ sec: sec - 1 });
-    } else {
-      this.minDecr();
+      if (min === 0 && sec === 0) {
+        clearInterval(this.timerID);
+        this.props.onChangeTimerRunning();
+        this.props.onCompleteTask();
+      }
+      if (sec > 0) {
+        this.setState({ sec: sec - 1 });
+      } else {
+        this.minDecr();
+      }
+
+      onTimeChange(id, min, sec);
     }
   };
 
