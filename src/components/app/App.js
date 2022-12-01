@@ -3,7 +3,7 @@
 /* eslint-disable indent */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
-import { Component } from 'react';
+import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import NewTaskForm from '../newTaskForm/newTaskForm';
@@ -12,50 +12,39 @@ import Footer from '../footer/footer';
 
 import './App.css';
 
-export default class App extends Component {
-  constructor(props) {
-    super(props);
+function App() {
+  const [data, setData] = useState(JSON.parse(localStorage.getItem('todoData')) || []);
+  const [filter, setFilter] = useState('All');
 
-    this.state = {
-      data: JSON.parse(localStorage.getItem('todoData')) || [],
-      filter: 'All',
-    };
-  }
-
-  onEdit = (id) => {
-    this.setState(({ data }) => ({
-      data: data.map((item) => (item.id === id ? { ...item, editing: !item.editing } : item)),
-    }));
+  const onEdit = (id) => {
+    setData((data) => data.map((item) => (item.id === id ? { ...item, editing: !item.editing } : item)));
   };
 
-  onEditTaskForm = (id, newText) => {
-    this.setState(({ data }) => ({
-      data: data.map((item) => {
+  const onEditTaskForm = (id, newText) => {
+    setData((data) => data.map((item) => (item.id === id ? { ...item, editing: !item.editing, text: newText } : item)));
+  };
+
+  const onDelete = (id) => {
+    setData((data) => data.filter((item) => item.id !== id));
+  };
+
+  const onCompleted = (id) => {
+    setData(data.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item)));
+  };
+
+  const onChangeTimerRunning = (id) => {
+    setData((data) => {
+      const newData = data.map((item) => {
         if (item.id === id) {
-          return {
-            ...item,
-            editing: !item.editing,
-            text: newText,
-          };
+          return { ...item, timerRunning: !item.timerRunning };
         }
         return item;
-      }),
-    }));
+      });
+      return { data: newData };
+    });
   };
 
-  onDelete = (id) => {
-    this.setState(({ data }) => ({
-      data: data.filter((item) => item.id !== id),
-    }));
-  };
-
-  onCompleted = (id) => {
-    this.setState(({ data }) => ({
-      data: data.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item)),
-    }));
-  };
-
-  createNewItem = (text, min, sec) => {
+  const createNewItem = (text, min, sec) => {
     const minNumber = !min || isNaN(min) ? 12 : min;
     const secNumber = !sec || isNaN(sec) ? 25 : sec;
 
@@ -71,36 +60,19 @@ export default class App extends Component {
     };
   };
 
-  onChangeTimerRunning = (id) => {
-    this.setState(({ data }) => {
-      const newData = data.map((item) => {
-        if (item.id === id) {
-          return { ...item, timerRunning: !item.timerRunning };
-        }
-        return item;
-      });
-      return { data: newData };
-    });
-  };
-
-  onCreate = (text, min, sec) => {
-    const { data } = this.state;
-
-    const newTask = this.createNewItem(text, min, sec);
+  const onCreate = (text, min, sec) => {
+    const newTask = createNewItem(text, min, sec);
 
     const newArr = [...data, newTask];
 
-    this.setState(() => ({
-      data: newArr,
-    }));
+    setData(newArr);
   };
 
-  onFilterChange = (filterName) => {
-    this.setState({ filter: filterName });
+  const onFilterChange = (filterName) => {
+    setFilter(filterName);
   };
 
-  // eslint-disable-next-line class-methods-use-this
-  filteredData = (data, filterName) => {
+  const filteredData = (data, filterName) => {
     switch (filterName) {
       case 'Active':
         return data.filter((item) => !item.completed);
@@ -112,44 +84,39 @@ export default class App extends Component {
     }
   };
 
-  onClearCompleted = () => {
-    this.setState(({ data }) => {
-      return { data: data.filter((item) => item.completed === false) };
-    });
+  const onClearCompleted = () => {
+    setData((data) => data.filter((item) => item.completed === false));
   };
 
-  onTimeChange = (id, min, sec) => {
-    this.setState(({ data }) => ({
-      data: data.map((item) => (id === item.id ? { ...item, minValue: min, secValue: sec } : { ...item })),
-    }));
+  const onTimeChange = (id, min, sec) => {
+    setData((data) => data.map((item) => (id === item.id ? { ...item, minValue: min, secValue: sec } : { ...item })));
   };
 
-  render() {
-    const { data, filter } = this.state;
-    const visibleData = this.filteredData(data, filter);
-    const completedItemCount = data.filter((item) => item.completed).length;
+  const visibleData = filteredData(data, filter);
+  const completedItemCount = data.filter((item) => item.completed).length;
 
-    localStorage.setItem('todoData', JSON.stringify(data));
+  localStorage.setItem('todoData', JSON.stringify(data));
 
-    return (
-      <section className="todoapp">
-        <NewTaskForm onCreate={this.onCreate} />
-        <TaskList
-          data={visibleData}
-          onEdit={this.onEdit}
-          onEditTaskForm={this.onEditTaskForm}
-          onDelete={this.onDelete}
-          onComplete={this.onCompleted}
-          onChangeTimerRunning={this.onChangeTimerRunning}
-          onTimeChange={this.onTimeChange}
-        />
-        <Footer
-          completedItemCount={completedItemCount}
-          onFilterChange={this.onFilterChange}
-          filter={filter}
-          onClearCompleted={this.onClearCompleted}
-        />
-      </section>
-    );
-  }
+  return (
+    <section className="todoapp">
+      <NewTaskForm onCreate={onCreate} />
+      <TaskList
+        data={visibleData}
+        onEdit={onEdit}
+        onEditTaskForm={onEditTaskForm}
+        onDelete={onDelete}
+        onComplete={onCompleted}
+        onChangeTimerRunning={onChangeTimerRunning}
+        onTimeChange={onTimeChange}
+      />
+      <Footer
+        completedItemCount={completedItemCount}
+        onFilterChange={onFilterChange}
+        filter={filter}
+        onClearCompleted={onClearCompleted}
+      />
+    </section>
+  );
 }
+
+export default App;
