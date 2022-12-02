@@ -1,168 +1,173 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 
 import './task.css';
 
-export default class Task extends Component {
-  static defaultProps = {
-    onEditTaskForm: () => {},
-    text: '',
-    completed: false,
-    editing: false,
-    timerRunning: false,
-    onEditTask: () => {},
-    onDeleteTask: () => {},
-    onCompleteTask: () => {},
-  };
+function Task({
+  text,
+  completed,
+  editing,
+  onEditTask,
+  onDeleteTask,
+  onCompleteTask,
+  timerRunning,
+  onChangeTimerRunning,
+  onTimeChange,
+  id,
+  minValue,
+  secValue,
+  ...props
+}) {
+  const [newTaskLabel, setNewTaskLabel] = useState('');
+  const [min, setMin] = useState(+minValue);
+  const [sec, setSec] = useState(+secValue);
+  const [afterCreationTime, setAfterCreationTime] = useState(
+    formatDistanceToNow(props.afterCreationTime, { includeSeconds: true })
+  );
 
-  static propTypes = {
-    onEditTaskForm: PropTypes.func,
-    text: PropTypes.string,
-    completed: PropTypes.bool,
-    editing: PropTypes.bool,
-    timerRunning: PropTypes.bool,
-    onEditTask: PropTypes.func,
-    onDeleteTask: PropTypes.func,
-    onCompleteTask: PropTypes.func,
-  };
+  const timerID = useRef(null);
+  const timeCreationID = useRef(null);
 
-  constructor(props) {
-    super(props);
+  // const timeUpdate = () => {
+  //  setAfterCreationTime(formatDistanceToNow(props.afterCreationTime, { includeSeconds: true }));
+  // };
 
-    this.state = {
-      newTaskLabel: '',
-      min: this.props.minValue,
-      sec: this.props.secValue,
-      afterCreationTime: formatDistanceToNow(this.props.afterCreationTime, { includeSeconds: true }),
+  useEffect(() => {
+    timeCreationID.current = setInterval(() => {
+      setAfterCreationTime(formatDistanceToNow(props.afterCreationTime, { includeSeconds: true }));
+    }, 1000);
+
+    return () => {
+      clearInterval(timeCreationID.current);
     };
-  }
+  }, [props.afterCreationTime]);
 
-  componentDidMount() {
-    this.timeCreationID = setInterval(() => {
-      this.timeUpdate();
-    }, 5000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-    clearInterval(this.timeCreationID);
-  }
-
-  onChangeLabel = (e) => {
-    this.setState({ newTaskLabel: e.target.value });
-  };
-
-  startTimer = () => {
-    this.props.onChangeTimerRunning();
-    this.timerID = setInterval(this.timerDecrement, 1000);
-  };
-
-  pauseTimer = () => {
-    clearInterval(this.timerID);
-    this.props.onChangeTimerRunning();
-  };
-
-  timeUpdate = () => {
-    this.setState({
-      afterCreationTime: formatDistanceToNow(this.props.afterCreationTime, { includeSeconds: true }),
-    });
-  };
-
-  minDecr = () => {
-    const { min } = this.state;
+  const minDecr = () => {
     if (min > 0) {
-      this.setState({
-        min: min - 1,
-        sec: 59,
-      });
+      setMin((min) => Number(min - 1));
+      setSec(() => Number(59));
     }
   };
 
-  timerDecrement = () => {
-    const { min, sec } = this.state;
-    const { onTimeChange, id, timerRunning } = this.props;
+  const pauseTimer = () => {
+    clearInterval(timerID.current);
+    onChangeTimerRunning();
+  };
 
+  const timerDecrement = () => {
     if (timerRunning) {
-      if (this.props.editing) {
-        this.pauseTimer();
+      if (editing) {
+        pauseTimer();
       }
 
       if (min === 0 && sec === 0) {
-        clearInterval(this.timerID);
-        this.props.onChangeTimerRunning();
-        this.props.onCompleteTask();
+        clearInterval(timerID.current);
+        onChangeTimerRunning();
+        onCompleteTask();
       }
       if (sec > 0) {
-        this.setState({ sec: sec - 1 });
+        setSec((sec) => Number(sec - 1));
       } else {
-        this.minDecr();
+        minDecr();
       }
-
       onTimeChange(id, min, sec);
     }
   };
 
-  onEditTaskForm = (e) => {
-    const { onEditTaskForm, id } = this.props;
-    const { newTaskLabel } = this.state;
+  useEffect(() => {
+    if (timerRunning) {
+      timerID.current = setInterval(() => {
+        timerDecrement();
+      }, 1000);
+    }
+    return () => clearInterval(timerID.current);
+  }, [timerRunning, sec]);
 
+  const onChangeLabel = (e) => {
+    setNewTaskLabel(e.target.value);
+  };
+
+  const startTimer = () => {
+    onChangeTimerRunning();
+  };
+
+  const onEditTaskForm = (e) => {
     if (e.keyCode === 13 && e.target.value) {
-      onEditTaskForm(id, newTaskLabel);
-
-      this.setState({ newTaskLabel: '' });
+      props.onEditTaskForm(id, newTaskLabel);
+      setNewTaskLabel('');
     }
   };
 
-  render() {
-    const { text, completed, editing, onEditTask, onDeleteTask, onCompleteTask, timerRunning } = this.props;
-    const { newTaskLabel, min, sec, afterCreationTime } = this.state;
+  // eslint-disable-next-line no-nested-ternary
+  const classListItem = completed ? 'completed' : editing ? 'editing' : null;
+  const buttonType = !timerRunning ? (
+    <button type="button" className="icon icon-play" onClick={startTimer} />
+  ) : (
+    <button type="button" className="icon icon-pause" onClick={pauseTimer} />
+  );
 
-    // eslint-disable-next-line no-nested-ternary
-    const classListItem = completed ? 'completed' : editing ? 'editing' : null;
-    const buttonType = !timerRunning ? (
-      <button type="button" className="icon icon-play" onClick={this.startTimer} />
-    ) : (
-      <button type="button" className="icon icon-pause" onClick={this.pauseTimer} />
-    );
-
-    return (
-      <li className={classListItem}>
-        <div className="view">
-          <input className="toggle" type="checkbox" checked={completed} onClick={onCompleteTask} readOnly />
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-          <div className="label">
-            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-            <span className="title" onClick={onCompleteTask} onKeyDown={onCompleteTask}>
-              {text}
-            </span>
-            <span className="created">
-              {buttonType}
-              {min > 9 ? min : `0${min}`}:{sec > 9 ? sec : `0${sec}`}
-            </span>
-            <span className="created text-time">created {afterCreationTime} ago</span>
-          </div>
-          <button type="button" className="icon icon-edit" onClick={onEditTask} aria-label="Edit button" />
-          <button type="button" className="icon icon-destroy" onClick={onDeleteTask} aria-label="Delete button" />
+  return (
+    <li className={classListItem}>
+      <div className="view">
+        <input className="toggle" type="checkbox" checked={completed} onClick={onCompleteTask} readOnly />
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <div className="label">
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+          <span className="title" onClick={onCompleteTask} onKeyDown={onCompleteTask}>
+            {text}
+          </span>
+          <span className="created">
+            {buttonType}
+            {min > 9 ? min : `0${min}`}:{sec > 9 ? sec : `0${sec}`}
+          </span>
+          <span className="created text-time">created {afterCreationTime} ago</span>
         </div>
-        {editing ? (
-          <input
-            type="text"
-            className="edit"
-            placeholder="Enter a new task"
-            onChange={this.onChangeLabel}
-            onKeyDown={this.onEditTaskForm}
-            value={newTaskLabel}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
-          />
-        ) : (
-          ''
-        )}
-      </li>
-    );
-  }
+        <button type="button" className="icon icon-edit" onClick={onEditTask} aria-label="Edit button" />
+        <button type="button" className="icon icon-destroy" onClick={onDeleteTask} aria-label="Delete button" />
+      </div>
+      {editing ? (
+        <input
+          type="text"
+          className="edit"
+          placeholder="Enter a new task"
+          onChange={onChangeLabel}
+          onKeyDown={onEditTaskForm}
+          value={newTaskLabel}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+        />
+      ) : (
+        ''
+      )}
+    </li>
+  );
 }
+
+Task.defaultProps = {
+  onEditTaskForm: () => {},
+  text: '',
+  completed: false,
+  editing: false,
+  timerRunning: false,
+  onEditTask: () => {},
+  onDeleteTask: () => {},
+  onCompleteTask: () => {},
+};
+
+Task.propTypes = {
+  onEditTaskForm: PropTypes.func,
+  text: PropTypes.string,
+  completed: PropTypes.bool,
+  editing: PropTypes.bool,
+  timerRunning: PropTypes.bool,
+  onEditTask: PropTypes.func,
+  onDeleteTask: PropTypes.func,
+  onCompleteTask: PropTypes.func,
+};
+
+export default Task;

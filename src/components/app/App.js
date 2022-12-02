@@ -34,13 +34,12 @@ function App() {
 
   const onChangeTimerRunning = (id) => {
     setData((data) => {
-      const newData = data.map((item) => {
+      return data.map((item) => {
         if (item.id === id) {
           return { ...item, timerRunning: !item.timerRunning };
         }
         return item;
       });
-      return { data: newData };
     });
   };
 
