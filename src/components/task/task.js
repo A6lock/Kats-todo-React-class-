@@ -33,10 +33,6 @@ function Task({
   const timerID = useRef(null);
   const timeCreationID = useRef(null);
 
-  // const timeUpdate = () => {
-  //  setAfterCreationTime(formatDistanceToNow(props.afterCreationTime, { includeSeconds: true }));
-  // };
-
   useEffect(() => {
     timeCreationID.current = setInterval(() => {
       setAfterCreationTime(formatDistanceToNow(props.afterCreationTime, { includeSeconds: true }));
